@@ -1,0 +1,30 @@
+#call the packages
+library(rpart)
+library(caret)
+library(rpart.plot)
+
+#call the data
+data= iris
+
+#dividing the data into train data and test data
+s<-sample(150,150*0.8)
+train<-data[s,]
+dim(train)
+test<-data[-s,]
+dim(test)
+
+#model CART
+Sample_tree<-rpart(Species ~ ., method="class", data=train, control=rpart.control(minsplit=2, cp=0.001))
+Sample_tree
+printcp(Sample_tree)
+plotcp(Sample_tree)
+rpart.plot(Sample_tree)
+
+#do pruning on the tree
+Pruned_tree<-prune(Sample_tree,cp=0.11)
+prp(Pruned_tree,box.col=c("Grey", "Orange")[Sample_tree$frame$yval],varlen=0,faclen=0, type=4,extra=4,under=TRUE)
+rpart.plot(Pruned_tree)
+
+#make classification accuracy
+p<-predict(Sample_tree, test, type="class")
+confusionMatrix(table(p, test$Species))
