@@ -1,0 +1,38 @@
+#call the package to be used
+library(RWeka)
+library(caret)
+
+#call the data
+data=read.delim("clipboard")
+str(data)
+
+#change the data type to a categorical form
+data$IPKM=as.factor(data$IPKM)
+data$X1=as.factor(data$X1)
+data$X2=as.factor(data$X2)
+data$X3=as.factor(data$X3)
+data$X4=as.factor(data$X4)
+data$X5=as.factor(data$X5)
+data$X6=as.factor(data$X6)
+data$X7=as.factor(data$X7)
+
+#dividing the data into train and test data
+s<-sample(514,514*0.8)
+train<-data[s,]
+test<-data[-s,]
+
+#install the ID3 package in RWeka
+#must be connected to the internet
+WPM("refresh-cache")
+WPM("install-package","simpleEducationalLearningSchemes")
+WPM("load-package","simpleEducationalLearningSchemes")
+id3=make_Weka_classifier("weka/classifiers/trees/Id3")
+
+#create a decision tree model
+Modelid3=id3(IPKM~., data=train)
+Modelid3
+summary(Modelid3)
+
+#raises the results of classification accuracy
+pred.test.ID3<-predict(Modelid3, test, type="class")
+confusionMatrix(table(pred.test.ID3, test$IPKM))
