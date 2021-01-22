@@ -1,0 +1,25 @@
+# load the package
+library(RWeka)
+library(caret)
+library(e1071)
+library(partykit)
+
+# load data
+iris
+str(iris)
+dim(iris)
+
+s<-sample(150,150*0.8)
+train<-iris[s,]
+test<-iris[-s,]
+
+# fit model
+fit <- J48(Species~., data=train)
+fit
+# summarize the fit
+summary(fit)
+#visualisasi
+if(require("partykit", quietly = TRUE)) plot(fit)
+# make predictions
+p<- predict(fit, test, type="class")
+confusionMatrix(table(p,test$Species))
